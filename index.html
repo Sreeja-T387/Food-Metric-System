@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Canteen Digital Ordering Kiosk</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --primary-light: #d1fae5;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --radius-sm: 8px;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.04);
+            --shadow-md: 0 8px 24px rgba(15,23,42,0.08);
+            --shadow-lg: 0 20px 40px rgba(15,23,42,0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-dark);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+
+        /* App Container & Screen Transitions */
+        #app {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--bg-main);
+        }
+
+        .screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.98);
+            z-index: 0;
+        }
+
+        .screen.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
+            z-index: 10;
+        }
+
+        /* ==========================================================================
+           SCREEN 1: SPLASH SCREEN
+           ========================================================================== */
+        #screen-splash {
+            background: radial-gradient(circle at 50% 30%, #1e293b 0%, #0f172a 100%);
+            color: #ffffff;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            padding: 40px;
+        }
+
+        .splash-glow {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, rgba(16, 185, 129, 0) 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse-glow 3s infinite alternate ease-in-out;
+            pointer-events: none;
+        }
+
+        @keyframes pulse-glow {
+            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.5; }
+            100% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.9; }
+        }
+
+        .splash-content {
+            position: relative;
+            z-index: 2;
+            max-width: 650px;
+        }
+
+        .kiosk-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #a7f3d0;
+            margin-bottom: 24px;
+            backdrop-filter: blur(10px);
+        }
+
+        .kiosk-badge::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            box-shadow: 0 0 10px #10b981;
+        }
+
+        .splash-title {
+            font-size: clamp(38px, 6vw, 56px);
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 16px;
+            letter-spacing: -1px;
+        }
+
+        .splash-title span {
+            background: linear-gradient(135deg, #34d399, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .splash-subtitle {
+            font-size: 18px;
+            color: #94a3b8;
+            margin-bottom: 48px;
+            line-height: 1.5;
+        }
+
+        .touch-prompt-card {
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(16, 185, 129, 0.4);
+            border-radius: 28px;
+            padding: 24px 36px;
+            display: inline-flex;
+            align-items: center;
+            gap: 20px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+            animation: bounce-subtle 2s infinite ease-in-out;
+        }
+
+        @keyframes bounce-subtle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .touch-icon-box {
+            width: 58px;
+            height: 58px;
+            background: #10b981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+        }
+
+        .touch-icon-box svg {
+            width: 32px;
+            height: 32px;
+            fill: #ffffff;
+        }
+
+        .touch-prompt-text {
+            text-align: left;
+        }
+
+        .touch-prompt-text h3 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .touch-prompt-text p {
+            font-size: 14px;
+            color: #a7f3d0;
+        }
+
+        /* ==========================================================================
+           SCREEN 2: ORDERING KIOSK PAGE
+           ========================================================================== */
+        #screen-order {
+            display: grid;
+            grid-template-rows: auto auto 1fr auto;
+            height: 100vh;
+        }
+
+        /* Top Header */
+        .kiosk-header {
+            background: #ffffff;
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            z-index: 5;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #10b981, #047857);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .brand-text h1 {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-dark);
+            line-height: 1.2;
+        }
+
+        .brand-text p {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .status-pill .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            box-shadow: 0 0 6px var(--primary);
+        }
+
+        .btn-cancel {
+            background: #f1f5f9;
+            color: var(--text-dark);
+            border: none;
+            padding: 10px 18px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-cancel:hover {
+            background: #e2e8f0;
+        }
+
+        /* Top Category Navigation Bar */
+        .category-nav-bar {
+            background: #ffffff;
+            padding: 14px 32px;
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            border-bottom: 1px solid var(--border);
+            scrollbar-width: none;
+        }
+
+        .category-nav-bar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category-tab {
+            padding: 12px 24px;
+            border-radius: 50px;
+            background: #f1f5f9;
+            color: var(--text-muted);
+            border: 2px solid transparent;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .category-tab .icon {
+            font-size: 18px;
+        }
+
+        .category-tab:hover {
+            background: #e2e8f0;
+            color: var(--text-dark);
+        }
+
+        .category-tab.active {
+            background: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+        }
+
+        /* Item Grid View */
+        .catalog-container {
+            padding: 24px 32px;
+            overflow-y: auto;
+            max-height: 100%;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+            padding-bottom: 110px; /* spacing for bottom floating cart */
+        }
+
+        /* Clean Square Item Card Layout */
+        .item-card {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            aspect-ratio: 1 / 1.08;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .item-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .item-card.out-of-stock {
+            opacity: 0.65;
+            filter: grayscale(40%);
+        }
+
+        .item-card.out-of-stock:hover {
+            transform: none;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Top Right Corner: Stock Badge */
+        .stock-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            z-index: 2;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+        }
+
+        .stock-badge.high {
+            background: rgba(16, 185, 129, 0.9);
+            color: #ffffff;
+        }
+
+        .stock-badge.low {
+            background: rgba(245, 158, 11, 0.95);
+            color: #ffffff;
+            animation: pulse-badge 2s infinite ease-in-out;
+        }
+
+        .stock-badge.zero {
+            background: rgba(239, 68, 68, 0.95);
+            color: #ffffff;
+        }
+
+        @keyframes pulse-badge {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.75; }
+        }
+
+        /* Center: Food Item Image & Name */
+        .card-media {
+            flex: 1;
+            width: 100%;
+            height: 52%;
+            background: #f1f5f9;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .item-card:hover:not(.out-of-stock) .card-media img {
+            transform: scale(1.06);
+        }
+
+        .card-info {
+            padding: 12px 16px 8px 16px;
+            text-align: center;
+        }
+
+        .item-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+            line-height: 1.25;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .item-category-tag {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        /* Card Footer: Bottom Left Button & Bottom Right Price */
+        .card-footer {
+            padding: 10px 16px 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: auto;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        /* Bottom Right Corner: Price (₹) */
+        .item-price {
+            font-size: 19px;
+            font-weight: 800;
+            color: var(--text-dark);
+            letter-spacing: -0.5px;
+        }
+
+        /* Bottom Left Corner: Add / Quantity Selector */
+        .btn-add {
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s ease;
+        }
+
+        .btn-add:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-add:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        .quantity-stepper {
+            display: flex;
+            align-items: center;
+            background: #f1f5f9;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .btn-step {
+            background: #ffffff;
+            border: none;
+            width: 32px;
+            height: 32px;
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text-dark);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s;
+        }
+
+        .btn-step:hover {
+            background: #e2e8f0;
+        }
+
+        .step-qty {
+            min-width: 26px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--primary-dark);
+        }
+
+        /* Bottom Floating Cart & Checkout Bar */
+        .bottom-cart-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #ffffff;
+            padding: 16px 36px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid var(--border);
+            box-shadow: 0 -8px 30px rgba(15, 23, 42, 0.1);
+            z-index: 20;
+        }
+
+        .cart-summary {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .cart-icon-pill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f1f5f9;
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--text-dark);
+        }
+
+        .cart-icon-pill .badge {
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .cart-total-box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-total-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .cart-total-amount {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text-dark);
+            letter-spacing: -1px;
+        }
+
+        .btn-place-order {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #ffffff;
+            border: none;
+            padding: 16px 36px;
+            border-radius: var(--radius-md);
+            font-size: 18px;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-place-order:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(16, 185, 129, 0.5);
+        }
+
+        .btn-place-order:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* ==========================================================================
+           MODALS & OVERLAYS: CONFIRMATION & NOTIFICATIONS
+           ========================================================================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: #ffffff;
+            border-radius: 28px;
+            padding: 40px;
+            max-width: 480px;
+            width: 90%;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            transform: scale(0.92);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: scale(1);
+        }
+
+        .success-icon-box {
+            width: 80px;
+            height: 80px;
+            background: #d1fae5;
+            color: #059669;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px auto;
+            font-size: 42px;
+            box-shadow: 0 0 0 12px rgba(209, 250, 229, 0.4);
+            animation: bounce-check 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes bounce-check {
+            0% { transform: scale(0); }
+            70% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+
+        .modal-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .order-id-badge {
+            display: inline-block;
+            background: #f1f5f9;
+            color: var(--primary-dark);
+            font-weight: 800;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 16px;
+            margin-bottom: 16px;
+        }
+
+        .modal-message {
+            font-size: 15px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+
+        .reset-timer-container {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            margin-bottom: 24px;
+        }
+
+        .timer-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .timer-progress-bar {
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .timer-progress-fill {
+            height: 100%;
+            width: 100%;
+            background: var(--primary);
+            transition: width 1s linear;
+        }
+
+        .btn-new-order {
+            width: 100%;
+            background: var(--text-dark);
+            color: #ffffff;
+            border: none;
+            padding: 14px;
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-new-order:hover {
+            background: #334155;
+        }
+
+        /* Error Modal */
+        .modal-card.error .success-icon-box {
+            background: #fee2e2;
+            color: #dc2626;
+            box-shadow: 0 0 0 12px rgba(254, 226, 226, 0.4);
+        }
+
+        .modal-card.error .order-id-badge {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        /* Toast Alert Notification */
+        .toast {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: #1e293b;
+            color: #ffffff;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: var(--shadow-lg);
+            z-index: 200;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- ==========================================================================
+             SCREEN 1: SPLASH SCREEN
+             ========================================================================== -->
+        <section id="screen-splash" class="screen active" onclick="transitionToOrderScreen()">
+            <div class="splash-glow"></div>
+            <div class="splash-content">
+                <div class="kiosk-badge">Digital Self-Service Kiosk</div>
+                <h1 class="splash-title">Fresh Food.<br><span>Zero Waiting.</span></h1>
+                <p class="splash-subtitle">Tap below to explore our live breakfast, lunch, hot drinks, snacks & biscuits menu.</p>
+                
+                <div class="touch-prompt-card">
+                    <div class="touch-icon-box">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+                        </svg>
+                    </div>
+                    <div class="touch-prompt-text">
+                        <h3>Touch Screen to Start Order</h3>
+                        <p>Instant Live Inventory & Atomic Checkout</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================================================
+             SCREEN 2: KIOSK ORDERING PAGE
+             ========================================================================== -->
+        <section id="screen-order" class="screen hidden">
+            <!-- Header Bar -->
+            <header class="kiosk-header">
+                <div class="header-brand">
+                    <div class="brand-logo">🍽️</div>
+                    <div class="brand-text">
+                        <h1>Campus Canteen Kiosk</h1>
+                        <p>Real-Time Live Inventory Tracking (₹ INR)</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <div class="status-pill">
+                        <span class="dot"></span>
+                        <span>MySQL Live Sync</span>
+                    </div>
+                    <button class="btn-cancel" onclick="resetToSplash()">Cancel & Exit</button>
+                </div>
+            </header>
+
+            <!-- Top Category Navigation Bar -->
+            <nav class="category-nav-bar" id="categoryNav">
+                <button class="category-tab active" data-category="All" onclick="filterCategory('All', this)">
+                    <span class="icon">✨</span>
+                    <span>All</span>
+                </button>
+                <button class="category-tab" data-category="Lunch" onclick="filterCategory('Lunch', this)">
+                    <span class="icon">🍱</span>
+                    <span>Lunch</span>
+                </button>
+                <button class="category-tab" data-category="Drinks" onclick="filterCategory('Drinks', this)">
+                    <span class="icon">🥤</span>
+                    <span>Drinks</span>
+                </button>
+                <button class="category-tab" data-category="Snacks" onclick="filterCategory('Snacks', this)">
+                    <span class="icon">🍟</span>
+                    <span>Snacks</span>
+                </button>
+                <button class="category-tab" data-category="Biscuits" onclick="filterCategory('Biscuits', this)">
+                    <span class="icon">🍪</span>
+                    <span>Biscuits</span>
+                </button>
+            </nav>
+
+            <!-- Item Cards Catalog Container -->
+            <main class="catalog-container">
+                <div class="items-grid" id="itemsGrid">
+                    <!-- Dynamically populated from /api/items -->
+                </div>
+            </main>
+
+            <!-- Bottom Floating Cart & Checkout Bar -->
+            <footer class="bottom-cart-bar">
+                <div class="cart-summary">
+                    <div class="cart-icon-pill">
+                        <span>🛒 Tray:</span>
+                        <span class="badge" id="cartItemCount">0</span>
+                    </div>
+                    <div class="cart-total-box">
+                        <span class="cart-total-label">Total to Pay</span>
+                        <span class="cart-total-amount" id="cartTotalDisplay">₹0.00</span>
+                    </div>
+                </div>
+                <button class="btn-place-order" id="btnPlaceOrder" onclick="submitOrder()" disabled>
+                    <span>Place Order</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            </footer>
+        </section>
+
+        <!-- ==========================================================================
+             ORDER CONFIRMATION & AUTO-RESET MODAL
+             ========================================================================== -->
+        <div class="modal-overlay" id="orderModal">
+            <div class="modal-card" id="modalCard">
+                <div class="success-icon-box" id="modalIcon">✓</div>
+                <h2 class="modal-title" id="modalTitle">Order Placed Successfully!</h2>
+                <div class="order-id-badge" id="modalBadge">Order #101</div>
+                <p class="modal-message" id="modalMessage">Your payment has been received and live canteen stock has been decremented atomically.</p>
+                
+                <div class="reset-timer-container" id="timerBox">
+                    <div class="timer-text">
+                        Next customer screen in <span id="countdownSec" style="font-weight: 800; color: var(--primary-dark);">5</span> seconds...
+                    </div>
+                    <div class="timer-progress-bar">
+                        <div class="timer-progress-fill" id="timerFill"></div>
+                    </div>
+                </div>
+
+                <button class="btn-new-order" id="modalBtn" onclick="resetToSplash()">Start New Order Now</button>
+            </div>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div class="toast" id="toastMessage">Stock updated!</div>
+    </div>
+
+    <!-- Application Logic -->
+    <script>
+        // State
+        let allItems = [];
+        let activeCategory = 'All';
+        let cart = {}; // { itemId: quantity }
+        let autoResetInterval = null;
+        let periodicSyncInterval = null;
+
+        // 1. Initial Page Load: Dynamically fetch live stock levels from MySQL
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchItems();
+            startPeriodicSync();
+        });
+
+        // Periodic live stock sync (every 4 seconds) to reflect admin manual restocks or concurrent orders
+        function startPeriodicSync() {
+            if (periodicSyncInterval) clearInterval(periodicSyncInterval);
+            periodicSyncInterval = setInterval(() => {
+                const orderScreen = document.getElementById('screen-order');
+                if (orderScreen && orderScreen.classList.contains('active')) {
+                    fetchItemsSilently();
+                }
+            }, 4000);
+        }
+
+        // Transition from Splash to Ordering screen: Refresh live stock immediately
+        async function transitionToOrderScreen() {
+            document.getElementById('screen-splash').classList.replace('active', 'hidden');
+            document.getElementById('screen-order').classList.replace('hidden', 'active');
+            await fetchItems(); // live refresh from MySQL on kiosk start
+        }
+
+        // Reset back to Splash screen
+        function resetToSplash() {
+            clearAutoReset();
+            closeModal();
+            cart = {};
+            activeCategory = 'All';
+            updateCartUI();
+
+            // Reset category tabs to 'All'
+            document.querySelectorAll('.category-tab').forEach(t => {
+                t.classList.toggle('active', t.getAttribute('data-category') === 'All');
+            });
+
+            document.getElementById('screen-order').classList.replace('active', 'hidden');
+            document.getElementById('screen-splash').classList.replace('hidden', 'active');
+        }
+
+        // Fetch Live Inventory from GET /api/items (MySQL)
+        async function fetchItems() {
+            try {
+                const res = await fetch('/api/items');
+                if (!res.ok) throw new Error('Failed to load menu items');
+                allItems = await res.json();
+                renderItems();
+            } catch (err) {
+                console.error(err);
+                showToast("⚠️ Could not load live stock from database.");
+            }
+        }
+
+        // Silent background sync that updates card stock counts without disrupting active cart
+        async function fetchItemsSilently() {
+            try {
+                const res = await fetch('/api/items');
+                if (!res.ok) return;
+                const freshItems = await res.json();
+                allItems = freshItems;
+
+                // Adjust cart if stock changed concurrently
+                let cartModified = false;
+                for (const [idStr, qty] of Object.entries(cart)) {
+                    const id = parseInt(idStr, 10);
+                    const item = allItems.find(i => i.id === id);
+                    if (item && qty > item.stock) {
+                        cart[id] = item.stock;
+                        if (item.stock === 0) delete cart[id];
+                        cartModified = true;
+                    }
+                }
+
+                if (cartModified) {
+                    showToast("⚠️ Stock count updated from database.");
+                    updateCartUI();
+                }
+
+                renderItems();
+            } catch (ignored) {}
+        }
+
+        // Filter items by category
+        function filterCategory(category, buttonEl) {
+            activeCategory = category;
+            document.querySelectorAll('.category-tab').forEach(b => b.classList.remove('active'));
+            if (buttonEl) buttonEl.classList.add('active');
+            renderItems();
+        }
+
+        // Render Square Item Cards
+        function renderItems() {
+            const grid = document.getElementById('itemsGrid');
+            grid.innerHTML = '';
+
+            const filtered = activeCategory === 'All' 
+                ? allItems 
+                : allItems.filter(item => item.category.toLowerCase() === activeCategory.toLowerCase());
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 60px; color: #94a3b8; font-size: 18px;">
+                    No items available in category '${activeCategory}'.
+                </div>`;
+                return;
+            }
+
+            filtered.forEach(item => {
+                const inCartQty = cart[item.id] || 0;
+                const isOutOfStock = item.stock <= 0;
+
+                // Live Stock badge styling
+                let badgeClass = 'high';
+                let badgeText = `Stock: ${item.stock}`;
+                if (item.stock === 0) {
+                    badgeClass = 'zero';
+                    badgeText = 'OUT OF STOCK';
+                } else if (item.stock <= 5) {
+                    badgeClass = 'low';
+                    badgeText = `Only ${item.stock} left`;
+                }
+
+                // Fallback image generator based on category
+                const defaultImgs = {
+                    'Lunch': 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&auto=format&fit=crop&q=80',
+                    'Drinks': 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400&auto=format&fit=crop&q=80',
+                    'Snacks': 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&auto=format&fit=crop&q=80',
+                    'Biscuits': 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=400&auto=format&fit=crop&q=80'
+                };
+                const imgSource = item.imageUrl || defaultImgs[item.category] || defaultImgs['Snacks'];
+
+                const card = document.createElement('div');
+                card.className = `item-card ${isOutOfStock ? 'out-of-stock' : ''}`;
+                card.id = `item-card-${item.id}`;
+
+                card.innerHTML = `
+                    <!-- Top Right Corner: Live Available Stock Badge -->
+                    <div class="stock-badge ${badgeClass}">${badgeText}</div>
+
+                    <!-- Center: Food Image & Item Name -->
+                    <div class="card-media">
+                        <img src="${imgSource}" alt="${item.name}" loading="lazy" onerror="this.src='${defaultImgs[item.category] || defaultImgs['Snacks']}'">
+                    </div>
+                    <div class="card-info">
+                        <h3 class="item-name" title="${item.name}">${item.name}</h3>
+                        <span class="item-category-tag">${item.category}</span>
+                    </div>
+
+                    <!-- Card Footer: Bottom Left Button & Bottom Right Price (₹) -->
+                    <div class="card-footer">
+                        <div class="card-action-slot">
+                            ${isOutOfStock ? `
+                                <button class="btn-add" disabled>Sold Out</button>
+                            ` : inCartQty > 0 ? `
+                                <div class="quantity-stepper">
+                                    <button class="btn-step" onclick="changeQty(${item.id}, -1)">−</button>
+                                    <span class="step-qty">${inCartQty}</span>
+                                    <button class="btn-step" onclick="changeQty(${item.id}, 1)" ${inCartQty >= item.stock ? 'disabled' : ''}>+</button>
+                                </div>
+                            ` : `
+                                <button class="btn-add" onclick="changeQty(${item.id}, 1)">
+                                    <span>+ Add</span>
+                                </button>
+                            `}
+                        </div>
+                        <!-- Bottom Right Corner: Price in Indian Rupees (₹) -->
+                        <div class="item-price">₹${item.price.toFixed(2)}</div>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        // Change quantity for an item
+        function changeQty(itemId, delta) {
+            const item = allItems.find(i => i.id === itemId);
+            if (!item) return;
+
+            const current = cart[itemId] || 0;
+            const target = current + delta;
+
+            if (target > item.stock) {
+                showToast(`⚠️ Only ${item.stock} available in stock!`);
+                return;
+            }
+
+            if (target <= 0) {
+                delete cart[itemId];
+            } else {
+                cart[itemId] = target;
+            }
+
+            updateCartUI();
+            renderItems();
+        }
+
+        // Update Bottom Floating Cart UI
+        function updateCartUI() {
+            let totalCount = 0;
+            let totalAmount = 0.00;
+
+            for (const [idStr, qty] of Object.entries(cart)) {
+                const id = parseInt(idStr, 10);
+                const item = allItems.find(i => i.id === id);
+                if (item) {
+                    totalCount += qty;
+                    totalAmount += (item.price * qty);
+                }
+            }
+
+            document.getElementById('cartItemCount').textContent = totalCount;
+            document.getElementById('cartTotalDisplay').textContent = `₹${totalAmount.toFixed(2)}`;
+
+            const placeOrderBtn = document.getElementById('btnPlaceOrder');
+            placeOrderBtn.disabled = totalCount === 0;
+        }
+
+        // Submit Atomic Order via POST /api/order
+        async function submitOrder() {
+            const orderBtn = document.getElementById('btnPlaceOrder');
+            const itemsToOrder = [];
+
+            for (const [idStr, qty] of Object.entries(cart)) {
+                itemsToOrder.push({ itemId: parseInt(idStr, 10), quantity: qty });
+            }
+
+            if (itemsToOrder.length === 0) return;
+
+            orderBtn.disabled = true;
+            orderBtn.innerHTML = `<span>Processing Order...</span>`;
+
+            try {
+                const response = await fetch('/api/order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        customerName: "Kiosk Customer",
+                        items: itemsToOrder
+                    })
+                });
+
+                const data = await response.json();
+
+                // 2. Immediately re-fetch live stock levels from MySQL after order is placed
+                await fetchItems();
+
+                if (response.ok && data.success) {
+                    showSuccessModal(data);
+                } else {
+                    // Order failed / out of stock / race condition blocked
+                    showErrorModal(data.message || "Order rejected due to insufficient stock.");
+                }
+
+            } catch (err) {
+                console.error(err);
+                await fetchItems();
+                showErrorModal("Server connection error. Please try again.");
+            } finally {
+                orderBtn.disabled = false;
+                orderBtn.innerHTML = `
+                    <span>Place Order</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                `;
+            }
+        }
+
+        // Show Success Modal with 5-Second Auto-Reset
+        function showSuccessModal(data) {
+            const modal = document.getElementById('orderModal');
+            const card = document.getElementById('modalCard');
+            const icon = document.getElementById('modalIcon');
+            const title = document.getElementById('modalTitle');
+            const badge = document.getElementById('modalBadge');
+            const msg = document.getElementById('modalMessage');
+            const timerBox = document.getElementById('timerBox');
+            const btn = document.getElementById('modalBtn');
+
+            card.className = "modal-card";
+            icon.textContent = "✓";
+            title.textContent = "Order Placed Successfully!";
+            badge.style.display = "inline-block";
+            badge.textContent = `Order #${data.orderId || Math.floor(Math.random() * 900 + 100)}`;
+            msg.textContent = `${data.message} Total Paid: ₹${(data.totalAmount || 0).toFixed(2)}. Please take your receipt.`;
+            timerBox.style.display = "block";
+            btn.textContent = "Start New Order";
+
+            modal.classList.add('active');
+
+            // 5-second automatic countdown reset back to Splash Screen
+            let secondsLeft = 5;
+            const countEl = document.getElementById('countdownSec');
+            const fillEl = document.getElementById('timerFill');
+            countEl.textContent = secondsLeft;
+            fillEl.style.width = '100%';
+
+            clearAutoReset();
+
+            autoResetInterval = setInterval(() => {
+                secondsLeft--;
+                countEl.textContent = secondsLeft;
+                fillEl.style.width = `${(secondsLeft / 5) * 100}%`;
+                if (secondsLeft <= 0) {
+                    resetToSplash();
+                }
+            }, 1000);
+        }
+
+        // Show Error Modal
+        function showErrorModal(errorMessage) {
+            const modal = document.getElementById('orderModal');
+            const card = document.getElementById('modalCard');
+            const icon = document.getElementById('modalIcon');
+            const title = document.getElementById('modalTitle');
+            const badge = document.getElementById('modalBadge');
+            const msg = document.getElementById('modalMessage');
+            const timerBox = document.getElementById('timerBox');
+            const btn = document.getElementById('modalBtn');
+
+            card.className = "modal-card error";
+            icon.textContent = "✕";
+            title.textContent = "Order Could Not Be Completed";
+            badge.style.display = "none";
+            msg.textContent = errorMessage;
+            timerBox.style.display = "none";
+            btn.textContent = "Review Menu & Tray";
+            btn.onclick = () => {
+                closeModal();
+            };
+
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('orderModal').classList.remove('active');
+            clearAutoReset();
+        }
+
+        function clearAutoReset() {
+            if (autoResetInterval) {
+                clearInterval(autoResetInterval);
+                autoResetInterval = null;
+            }
+        }
+
+        function showToast(text) {
+            const toast = document.getElementById('toastMessage');
+            toast.textContent = text;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
