@@ -8,7 +8,15 @@ All prices, transactions, console tables, and front-end displays operate in **In
 
 ## 🌟 Key Features
 
-1. **Interactive Admin Console with Manual Restocking (`Main.java`):**
+1. **Complete 36-Item Campus Canteen Menu:**
+   - **South & North Indian Lunch (12:00 PM - 3:00 PM):** Full Meals/Thali, Biryani bowls, Sambar Rice, Kothu Parottas, Curd Rice, Combos.
+   - **Cooked Snacks (All Day):** Samosas, Medhu Vadas, Cutlets, Veg & Egg Puffs, Samosa Sundal, Bread Omelette, French Fries.
+   - **Packaged Snacks (MRP):** Chips (Lays, Kurkure), Biscuits (Parle-G, Bourbon, Oreo, Dark Fantasy), Murukku/Namkeen, Chocolates (Dairy Milk, KitKat, 5 Star).
+   - **Cold Drinks & Juices (Chilled):** Soda bottles, Spiced Buttermilk/Chaas, Mango Lassi, Badam Milk, Rose Milk, Fresh Watermelon Juice, Cold Coffee.
+   - **Hot Beverages (Fresh):** Masala Chai / Ginger Tea, South Indian Filter Coffee, Hot Chocolate / Horlicks.
+   - **Every item features a distinct, unique high-quality representative food image** (zero duplicates).
+
+2. **Interactive Admin Console with Manual Restocking (`Main.java`):**
    - Type `restock` in the server terminal to initiate manual stock replenishment.
    - Interactive prompt asks:
      1. `Enter Item ID to restock: `
@@ -16,19 +24,19 @@ All prices, transactions, console tables, and front-end displays operate in **In
    - Executes MySQL query: `UPDATE items SET stock_quantity = stock_quantity + ? WHERE id = ?`.
    - Displays the refreshed live inventory table immediately after updating.
 
-2. **Currency in Indian Rupees (₹):**
-   - All dollar signs (`$`) have been converted to Indian Rupees (`₹`) across SQL schema seeds, Java console output, order receipts, and the front-end kiosk interface.
+3. **Currency in Indian Rupees (₹):**
+   - All pricing and transactions are fully formatted in Indian Rupees (`₹`) across SQL schema seeds, Java console output, receipts, and front-end displays.
 
-3. **Front-End Live Stock Refresh & Auto-Sync (`index.html`):**
+4. **Front-End Live Stock Refresh & Auto-Sync (`index.html`):**
    - **Page Load:** Dynamically fetches live stock levels from `GET /api/items`.
    - **Immediately After Order Placement:** Upon receiving order confirmation or rejection from `POST /api/order`, the kiosk immediately queries `GET /api/items` to refresh badge counts and card states from MySQL.
    - **Real-Time Periodic Sync:** Kiosk automatically polls `GET /api/items` every 4 seconds in the background so that any manual admin restock in the terminal is instantly visible to customers.
 
-4. **Touch-Screen Kiosk Experience:**
+5. **Touch-Screen Kiosk Experience:**
    - **Screen 1 (Splash Screen):** "Touch Screen to Start Order" with ambient glow. Tapping transitions to ordering.
    - **Screen 2 (Ordering Page):**
-     - Top category navigation bar (**All**, **Lunch**, **Drinks**, **Snacks**, **Biscuits**).
-     - Square food item cards: Top-right live stock badge, center photo & item name, bottom-right price in ₹, bottom-left `+ Add` button / quantity stepper.
+     - Top category navigation bar (**All Items**, **Lunch (12-3 PM)**, **Cooked Snacks**, **Packaged Snacks**, **Cold Drinks & Juices**, **Hot Beverages**).
+     - Square food item cards: Top-right live stock badge, distinct photo & item name, bottom-right price in ₹, bottom-left `+ Add` button / quantity stepper.
      - Bottom floating cart bar with live total in ₹ and **"Place Order"** button.
    - **Order Confirmation & 5-Second Auto-Reset:**
      - Displays order receipt modal with Order # and total paid in ₹.
@@ -51,14 +59,14 @@ sequenceDiagram
     Server->>DAO: restockItem(itemId: 1, addQty: 20)
     DAO->>DB: UPDATE items SET stock_quantity = stock_quantity + 20 WHERE id = 1
     DB-->>DAO: Rows updated: 1
-    DAO-->>Admin: Prints updated inventory table (Jam Bun now 70 units)
+    DAO-->>Admin: Prints updated inventory table
 
     Note over Customer: Kiosk auto-syncs or loads page
     Customer->>Server: GET /api/items
     Server->>DAO: getAllItemsAsJson()
     DAO->>DB: SELECT * FROM items ORDER BY id ASC
-    DB-->>DAO: Live inventory in ₹
-    Server-->>Customer: Renders live stock (Stock: 70) and ₹ prices
+    DB-->>DAO: Live inventory in ₹ with distinct image URLs
+    Server-->>Customer: Renders live stock and ₹ prices
 
     Customer->>Server: POST /api/order { items: [{ itemId: 1, quantity: 2 }] }
     Server->>DAO: placeOrder("Kiosk Customer", items)
@@ -69,7 +77,7 @@ sequenceDiagram
 
     Note over Customer: Kiosk immediately calls GET /api/items to synchronize MySQL stock
     Customer->>Server: GET /api/items
-    Server-->>Customer: Returns refreshed stock (Stock: 68)
+    Server-->>Customer: Returns refreshed stock
 ```
 
 ---
@@ -86,8 +94,8 @@ java_dbms/
 ├── OrderDAO.java            # ACID transaction engine with row-level locking
 ├── KioskServer.java         # Embedded HttpServer serving REST API and index.html
 ├── Main.java                # Launcher with interactive manual restocking console
-├── index.html               # Touch-Screen Kiosk Front-End (₹ currency, live auto-sync)
-├── schema.sql               # Database DDL, sample menu in ₹, constraints & indexes
+├── index.html               # Touch-Screen Kiosk Front-End (36 unique items, ₹, live auto-sync)
+├── schema.sql               # Database DDL with full 36-item menu and distinct photo URLs
 ├── lib/
 │   └── mysql-connector-j-8.4.0.jar  # MySQL JDBC Driver
 └── README.md                # Documentation & run instructions

@@ -215,9 +215,9 @@ public class ItemDAO {
      */
     public void printLiveInventory() {
         List<Item> items = getAllItems();
-        System.out.println("\n================================= LIVE CANTEEN INVENTORY =================================");
-        System.out.printf("%-4s | %-24s | %-10s | %-10s | %-12s | %-12s%n", "ID", "Item Name", "Category", "Price (₹)", "Stock Count", "Status");
-        System.out.println("------------------------------------------------------------------------------------------");
+        System.out.println("\n================================================= LIVE CANTEEN INVENTORY =================================================");
+        System.out.printf("%-4s | %-42s | %-16s | %-10s | %-12s | %-12s%n", "ID", "Item Name", "Category", "Price (₹)", "Stock Count", "Status");
+        System.out.println("-------------------------------------------------------------------------------------------------------------------------");
 
         for (Item item : items) {
             String status;
@@ -229,7 +229,7 @@ public class ItemDAO {
                 status = "AVAILABLE";
             }
 
-            System.out.printf("%-4d | %-24s | %-10s | ₹%-9.2f | %-12d | %-12s%n",
+            System.out.printf("%-4d | %-42s | %-16s | ₹%-9.2f | %-12d | %-12s%n",
                     item.getId(),
                     item.getName(),
                     item.getCategory(),
@@ -237,7 +237,7 @@ public class ItemDAO {
                     item.getStockQuantity(),
                     status);
         }
-        System.out.println("==========================================================================================\n");
+        System.out.println("=========================================================================================================================\n");
     }
 
     private Item mapResultSetToItem(ResultSet rs) throws SQLException {

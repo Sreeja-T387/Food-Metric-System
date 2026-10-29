@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Canteen Digital Ordering Kiosk</title>
+    <title>Campus Canteen Digital Ordering Kiosk</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -45,7 +45,7 @@
             overflow: hidden;
         }
 
-        /* App Container & Screen Transitions */
+        /* App Container & Transitions */
         #app {
             position: relative;
             width: 100%;
@@ -94,8 +94,8 @@
 
         .splash-glow {
             position: absolute;
-            width: 500px;
-            height: 500px;
+            width: 550px;
+            height: 550px;
             background: radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, rgba(16, 185, 129, 0) 70%);
             top: 50%;
             left: 50%;
@@ -112,7 +112,7 @@
         .splash-content {
             position: relative;
             z-index: 2;
-            max-width: 650px;
+            max-width: 680px;
         }
 
         .kiosk-badge {
@@ -121,7 +121,7 @@
             gap: 8px;
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 8px 18px;
+            padding: 8px 20px;
             border-radius: 50px;
             font-size: 14px;
             font-weight: 600;
@@ -224,7 +224,7 @@
         /* Top Header */
         .kiosk-header {
             background: #ffffff;
-            padding: 16px 32px;
+            padding: 14px 32px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -310,9 +310,9 @@
         /* Top Category Navigation Bar */
         .category-nav-bar {
             background: #ffffff;
-            padding: 14px 32px;
+            padding: 12px 32px;
             display: flex;
-            gap: 12px;
+            gap: 10px;
             overflow-x: auto;
             border-bottom: 1px solid var(--border);
             scrollbar-width: none;
@@ -323,23 +323,23 @@
         }
 
         .category-tab {
-            padding: 12px 24px;
+            padding: 10px 20px;
             border-radius: 50px;
             background: #f1f5f9;
             color: var(--text-muted);
             border: 2px solid transparent;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 700;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             transition: all 0.2s ease;
             white-space: nowrap;
         }
 
         .category-tab .icon {
-            font-size: 18px;
+            font-size: 17px;
         }
 
         .category-tab:hover {
@@ -362,9 +362,9 @@
 
         .items-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
             gap: 20px;
-            padding-bottom: 110px; /* spacing for bottom floating cart */
+            padding-bottom: 120px; /* spacing for bottom floating cart */
         }
 
         /* Clean Square Item Card Layout */
@@ -376,7 +376,7 @@
             position: relative;
             display: flex;
             flex-direction: column;
-            aspect-ratio: 1 / 1.08;
+            min-height: 310px;
             overflow: hidden;
             transition: transform 0.2s, box-shadow 0.2s;
         }
@@ -399,20 +399,20 @@
         /* Top Right Corner: Stock Badge */
         .stock-badge {
             position: absolute;
-            top: 12px;
-            right: 12px;
+            top: 10px;
+            right: 10px;
             padding: 5px 12px;
             border-radius: 50px;
-            font-size: 12px;
-            font-weight: 700;
+            font-size: 11px;
+            font-weight: 800;
             letter-spacing: 0.3px;
             z-index: 2;
             backdrop-filter: blur(8px);
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
         }
 
         .stock-badge.high {
-            background: rgba(16, 185, 129, 0.9);
+            background: rgba(16, 185, 129, 0.95);
             color: #ffffff;
         }
 
@@ -434,10 +434,9 @@
 
         /* Center: Food Item Image & Name */
         .card-media {
-            flex: 1;
             width: 100%;
-            height: 52%;
-            background: #f1f5f9;
+            height: 155px;
+            background: #e2e8f0;
             overflow: hidden;
             position: relative;
             display: flex;
@@ -457,30 +456,33 @@
         }
 
         .card-info {
-            padding: 12px 16px 8px 16px;
-            text-align: center;
+            padding: 12px 16px 6px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
 
         .item-name {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
             color: var(--text-dark);
-            line-height: 1.25;
-            margin-bottom: 2px;
-            white-space: nowrap;
+            line-height: 1.3;
+            min-height: 40px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
             overflow: hidden;
-            text-overflow: ellipsis;
         }
 
         .item-category-tag {
             font-size: 11px;
-            font-weight: 600;
+            font-weight: 700;
             text-transform: uppercase;
-            color: var(--text-muted);
+            color: var(--primary-dark);
             letter-spacing: 0.5px;
         }
 
-        /* Card Footer: Bottom Left Button & Bottom Right Price */
+        /* Card Footer: Bottom Left Button & Bottom Right Price (₹) */
         .card-footer {
             padding: 10px 16px 14px 16px;
             display: flex;
@@ -490,9 +492,9 @@
             border-top: 1px solid #f1f5f9;
         }
 
-        /* Bottom Right Corner: Price (₹) */
+        /* Bottom Right Corner: Price in Indian Rupees (₹) */
         .item-price {
-            font-size: 19px;
+            font-size: 20px;
             font-weight: 800;
             color: var(--text-dark);
             letter-spacing: -0.5px;
@@ -505,7 +507,7 @@
             border: none;
             padding: 8px 16px;
             border-radius: var(--radius-sm);
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 700;
             cursor: pointer;
             display: flex;
@@ -830,9 +832,9 @@
         <section id="screen-splash" class="screen active" onclick="transitionToOrderScreen()">
             <div class="splash-glow"></div>
             <div class="splash-content">
-                <div class="kiosk-badge">Digital Self-Service Kiosk</div>
+                <div class="kiosk-badge">Campus Canteen Self-Service Kiosk</div>
                 <h1 class="splash-title">Fresh Food.<br><span>Zero Waiting.</span></h1>
-                <p class="splash-subtitle">Tap below to explore our live breakfast, lunch, hot drinks, snacks & biscuits menu.</p>
+                <p class="splash-subtitle">Tap below to explore our South & North Indian Meals, Cooked Snacks, Packaged Treats, Cold Drinks & Hot Beverages.</p>
                 
                 <div class="touch-prompt-card">
                     <div class="touch-icon-box">
@@ -842,7 +844,7 @@
                     </div>
                     <div class="touch-prompt-text">
                         <h3>Touch Screen to Start Order</h3>
-                        <p>Instant Live Inventory & Atomic Checkout</p>
+                        <p>Real-Time Live Inventory & Instant Checkout</p>
                     </div>
                 </div>
             </div>
@@ -874,23 +876,23 @@
             <nav class="category-nav-bar" id="categoryNav">
                 <button class="category-tab active" data-category="All" onclick="filterCategory('All', this)">
                     <span class="icon">✨</span>
-                    <span>All</span>
+                    <span>All Items</span>
                 </button>
                 <button class="category-tab" data-category="Lunch" onclick="filterCategory('Lunch', this)">
                     <span class="icon">🍱</span>
                     <span>Lunch</span>
                 </button>
-                <button class="category-tab" data-category="Drinks" onclick="filterCategory('Drinks', this)">
-                    <span class="icon">🥤</span>
-                    <span>Drinks</span>
-                </button>
-                <button class="category-tab" data-category="Snacks" onclick="filterCategory('Snacks', this)">
-                    <span class="icon">🍟</span>
+                <button class="category-tab" data-category="Cooked Snacks" onclick="filterCategory('Cooked Snacks', this)">
+                    <span class="icon">🥟</span>
                     <span>Snacks</span>
                 </button>
-                <button class="category-tab" data-category="Biscuits" onclick="filterCategory('Biscuits', this)">
-                    <span class="icon">🍪</span>
-                    <span>Biscuits</span>
+                <button class="category-tab" data-category="Packaged Snacks" onclick="filterCategory('Packaged Snacks', this)">
+                    <span class="icon">🍿</span>
+                    <span>Chips & Biscuits</span>
+                </button>
+                <button class="category-tab" data-category="Cold Drinks" onclick="filterCategory('Cold Drinks', this)">
+                    <span class="icon">🥤</span>
+                    <span>Cold Drinks & Juices</span>
                 </button>
             </nav>
 
@@ -1049,6 +1051,15 @@
             renderItems();
         }
 
+        // Fallback placeholder images by category in case external image fails to load
+        const fallbackCategoryImgs = {
+            'Lunch': 'https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?w=600&auto=format&fit=crop&q=80',
+            'Cooked Snacks': 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=600&auto=format&fit=crop&q=80',
+            'Packaged Snacks': 'https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=600&auto=format&fit=crop&q=80',
+            'Cold Drinks': 'https://images.unsplash.com/photo-1589733955941-5eeaf752f6dd?w=600&auto=format&fit=crop&q=80',
+            'Hot Beverages': 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=600&auto=format&fit=crop&q=80'
+        };
+
         // Render Square Item Cards
         function renderItems() {
             const grid = document.getElementById('itemsGrid');
@@ -1060,7 +1071,7 @@
 
             if (filtered.length === 0) {
                 grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 60px; color: #94a3b8; font-size: 18px;">
-                    No items available in category '${activeCategory}'.
+                    No items found under '${activeCategory}'.
                 </div>`;
                 return;
             }
@@ -1080,14 +1091,8 @@
                     badgeText = `Only ${item.stock} left`;
                 }
 
-                // Fallback image generator based on category
-                const defaultImgs = {
-                    'Lunch': 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&auto=format&fit=crop&q=80',
-                    'Drinks': 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400&auto=format&fit=crop&q=80',
-                    'Snacks': 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&auto=format&fit=crop&q=80',
-                    'Biscuits': 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=400&auto=format&fit=crop&q=80'
-                };
-                const imgSource = item.imageUrl || defaultImgs[item.category] || defaultImgs['Snacks'];
+                const fallbackImg = fallbackCategoryImgs[item.category] || fallbackCategoryImgs['Cooked Snacks'];
+                const imgSource = item.imageUrl && item.imageUrl.trim().length > 0 ? item.imageUrl : fallbackImg;
 
                 const card = document.createElement('div');
                 card.className = `item-card ${isOutOfStock ? 'out-of-stock' : ''}`;
@@ -1099,7 +1104,7 @@
 
                     <!-- Center: Food Image & Item Name -->
                     <div class="card-media">
-                        <img src="${imgSource}" alt="${item.name}" loading="lazy" onerror="this.src='${defaultImgs[item.category] || defaultImgs['Snacks']}'">
+                        <img src="${imgSource}" alt="${item.name}" loading="lazy" onerror="this.onerror=null; this.src='${fallbackImg}';">
                     </div>
                     <div class="card-info">
                         <h3 class="item-name" title="${item.name}">${item.name}</h3>
@@ -1202,7 +1207,7 @@
 
                 const data = await response.json();
 
-                // 2. Immediately re-fetch live stock levels from MySQL after order is placed
+                // Immediately re-fetch live stock levels from MySQL after order is placed
                 await fetchItems();
 
                 if (response.ok && data.success) {
@@ -1243,7 +1248,7 @@
             title.textContent = "Order Placed Successfully!";
             badge.style.display = "inline-block";
             badge.textContent = `Order #${data.orderId || Math.floor(Math.random() * 900 + 100)}`;
-            msg.textContent = `${data.message} Total Paid: ₹${(data.totalAmount || 0).toFixed(2)}. Please take your receipt.`;
+            msg.textContent = `${data.message} Total Paid: ₹${(data.totalAmount || 0).toFixed(2)}. Please collect your token & food.`;
             timerBox.style.display = "block";
             btn.textContent = "Start New Order";
 
